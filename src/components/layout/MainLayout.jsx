@@ -4,21 +4,25 @@ import LeftPanel from './LeftPanel'
 import CenterArea from './CenterArea'
 import RightPanel from './RightPanel'
 import BottomBar from './BottomBar'
+import ContentManager from '../widgets/ContentManager'
 
-const MainLayout = ({ children, isListening = false }) => {
+const MainLayout = ({ children, isListening = false, activeWidget, onWidgetChange }) => {
     return (
         <div className="min-h-screen flex flex-col overflow-hidden">
             {/* Header */}
             <Header />
 
             {/* Main Content Area - 3 Panel Layout */}
-            <div className="flex-1 flex gap-6 p-6 overflow-hidden">
+            <div className="flex-1 flex gap-6 p-6 pb-24 overflow-hidden">
                 {/* Left Panel */}
-                <LeftPanel />
+                <LeftPanel activeId={activeWidget} onActiveChange={onWidgetChange} />
 
                 {/* Center Area */}
                 <CenterArea>
-                    {children}
+                    <div className="flex flex-col items-center gap-12 w-full max-w-4xl">
+                        {children}
+                        <ContentManager activeContext={activeWidget} />
+                    </div>
                 </CenterArea>
 
                 {/* Right Panel */}

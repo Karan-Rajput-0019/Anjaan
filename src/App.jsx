@@ -3,9 +3,11 @@ import { motion } from 'framer-motion'
 import { Volume2, VolumeX, Settings } from 'lucide-react'
 import MainLayout from './components/layout/MainLayout'
 import AICore from './components/core/AICore'
+import VoiceWaveform from './components/core/VoiceWaveform'
 
 function App() {
     const [coreState, setCoreState] = useState('idle') // 'idle' | 'listening' | 'thinking' | 'speaking'
+    const [activeWidget, setActiveWidget] = useState('weather')
     const [isMuted, setIsMuted] = useState(false)
 
     // Simplified state transition logic: Manual cycle through states on click
@@ -21,7 +23,11 @@ function App() {
     }
 
     return (
-        <MainLayout isListening={coreState === 'listening'}>
+        <MainLayout
+            isListening={coreState === 'listening'}
+            activeWidget={activeWidget}
+            onWidgetChange={setActiveWidget}
+        >
             {/* Decorative Background Elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <motion.div
@@ -51,11 +57,18 @@ function App() {
             </div>
 
             {/* AI Core Component */}
-            <AICore
-                state={coreState}
-                onClick={handleCoreClick}
-                size={300}
-            />
+            <div className="flex flex-col items-center gap-12 z-10">
+                <AICore
+                    state={coreState}
+                    onClick={handleCoreClick}
+                    size={300}
+                />
+
+                <VoiceWaveform
+                    state={coreState}
+                    size={{ width: 400, height: 80 }}
+                />
+            </div>
 
             {/* Control Buttons */}
             <motion.div
