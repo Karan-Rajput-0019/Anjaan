@@ -2,12 +2,24 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Mic, Brain, Volume2 } from 'lucide-react'
 import ParticleSystem from './ParticleSystem'
 import RippleEffect from './RippleEffect'
+import { useUI } from '../../contexts/UIContext'
 
 const AICore = ({
     state = 'idle', // 'idle' | 'listening' | 'thinking' | 'speaking'
     onClick,
-    size = 300
+    size: providedSize
 }) => {
+    const { breakpoint } = useUI();
+
+    // Dynamic size mapping
+    const sizes = {
+        xs: 200,
+        sm: 250,
+        md: 250,
+        lg: 300,
+        xl: 350
+    };
+    const size = providedSize || sizes[breakpoint] || 300;
     // State-specific configurations
     const stateConfig = {
         idle: {

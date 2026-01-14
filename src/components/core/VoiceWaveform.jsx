@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useUI } from '../../contexts/UIContext'
 
 /**
  * VoiceWaveform Component
@@ -7,7 +8,19 @@ import { motion, AnimatePresence } from 'framer-motion'
  * An elegant, canvas-based visualization that reacts to audio input/output.
  * Features smooth, curved paths and glass morphism styling.
  */
-const VoiceWaveform = ({ state = 'idle', size = { width: 400, height: 80 } }) => {
+const VoiceWaveform = ({ state = 'idle', size: providedSize }) => {
+    const { breakpoint, isSmall } = useUI();
+
+    // Responsive size mapping
+    const sizes = {
+        xs: { width: window.innerWidth - 48, height: 60 },
+        sm: { width: 400, height: 80 },
+        md: { width: 450, height: 80 },
+        lg: { width: 500, height: 100 },
+        xl: { width: 600, height: 120 }
+    };
+
+    const size = providedSize || sizes[breakpoint] || sizes.lg;
     const canvasRef = useRef(null)
     const audioContextRef = useRef(null)
     const analyserRef = useRef(null)

@@ -1,14 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import WeatherCard from './WeatherCard';
 import NewsPanel from './NewsPanel';
 import MediaPlayer from './MediaPlayer';
 import TaskList from './TaskList';
 import FileBrowser from './FileBrowser';
+import SettingsPanel from './SettingsPanel';
 
-const ContentManager = ({ activeContext = 'idle' }) => {
+import { WidgetSkeleton } from '../core/Skeletons'
+
+const ContentManager = ({ activeContext }) => {
+    const [isLoading, setIsLoading] = useState(false)
+
+    // Simulate loading when context changes
+    useEffect(() => {
+        setIsLoading(true)
+        const timer = setTimeout(() => setIsLoading(false), 300)
+        return () => clearTimeout(timer)
+    }, [activeContext])
+
     const getWidget = () => {
+        if (isLoading) return <WidgetSkeleton key="skeleton" />;
+
         switch (activeContext) {
+            case 'settings':
+                return <SettingsPanel key="settings" />;
             case 'weather':
                 return <WeatherCard key="weather" />;
             case 'news':

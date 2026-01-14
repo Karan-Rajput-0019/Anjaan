@@ -5,6 +5,13 @@ export default {
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
+        screens: {
+            'xs': '320px',
+            'sm': '768px',
+            'md': '1024px',
+            'lg': '1280px',
+            'xl': '1920px',
+        },
         extend: {
             colors: {
                 primary: '#c084fc',
@@ -20,6 +27,16 @@ export default {
                 warning: '#fcd34d',
                 error: '#fda4af',
                 info: '#a5b4fc',
+            },
+            fontSize: {
+                'adaptive-base': 'clamp(14px, 1.2vw, 18px)',
+                'adaptive-lg': 'clamp(18px, 2vw, 24px)',
+                'adaptive-xl': 'clamp(24px, 3vw, 36px)',
+            },
+            spacing: {
+                'safe-top': 'env(safe-area-inset-top)',
+                'safe-bottom': 'env(safe-area-inset-bottom)',
+                'responsive-p': 'clamp(1rem, 3vw, 2rem)',
             },
             fontFamily: {
                 poppins: ['Poppins', 'sans-serif'],

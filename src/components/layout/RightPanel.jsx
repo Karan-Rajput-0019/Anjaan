@@ -10,6 +10,7 @@ import {
     AlertCircle,
     MoreVertical
 } from 'lucide-react'
+import { useSettings } from '../../contexts/SettingsContext'
 
 const ChatMessage = ({ msg, isLast }) => {
     const isAI = msg.isAI
@@ -93,6 +94,7 @@ const InfoCard = ({ icon: Icon, title, value, detail, color = 'primary' }) => (
 
 const RightPanel = () => {
     const scrollRef = useRef(null)
+    const { settings, setIsLanguageModalOpen } = useSettings()
     const [messages, setMessages] = useState([
         { id: 1, message: 'How can I help you today?', time: '10:30 AM', isAI: true },
         { id: 2, message: 'Tell me about the weather', time: '10:31 AM', isAI: false },
@@ -187,13 +189,15 @@ const RightPanel = () => {
                         detail="Last sync: 2m ago"
                         color="primary"
                     />
-                    <InfoCard
-                        icon={Globe}
-                        title="Language"
-                        value="Hindi / English"
-                        detail="Mode: Auto-detect"
-                        color="secondary"
-                    />
+                    <div onClick={() => setIsLanguageModalOpen(true)}>
+                        <InfoCard
+                            icon={Globe}
+                            title="Language"
+                            value={settings.voice.languageMode === 'Auto' ? 'Auto-detect' : settings.voice.manualLanguage}
+                            detail={`Mode: ${settings.voice.languageMode}`}
+                            color="secondary"
+                        />
+                    </div>
                     <motion.div className="col-span-2">
                         <InfoCard
                             icon={Zap}

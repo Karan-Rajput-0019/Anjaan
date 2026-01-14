@@ -1,32 +1,43 @@
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Volume2, VolumeX, Settings } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Volume2, VolumeX, Settings as SettingsIcon } from 'lucide-react'
 import MainLayout from './components/layout/MainLayout'
 import AICore from './components/core/AICore'
 import VoiceWaveform from './components/core/VoiceWaveform'
+import { AppProviders } from './contexts/AppProviders'
+import { useSettings } from './contexts/SettingsContext'
+import { useAnjaan } from './contexts/AnjaanContext'
+import { useVoice } from './contexts/VoiceContext'
+import LanguageModal from './components/widgets/LanguageModal'
+import useKeyboardShortcuts from './hooks/useKeyboardShortcuts'
+import ShortcutHelp from './components/widgets/ShortcutHelp'
 
-function App() {
-    const [coreState, setCoreState] = useState('idle') // 'idle' | 'listening' | 'thinking' | 'speaking'
-    const [activeWidget, setActiveWidget] = useState('weather')
+function AppContent() {
+    const { settings } = useSettings()
+    const { currentView, setCurrentView } = useAnjaan()
+    const { voiceStatus, setVoiceStatus, startListening, stopListening } = useVoice()
+
+    const [isHelpOpen, setIsHelpOpen] = useState(false)
     const [isMuted, setIsMuted] = useState(false)
 
-    // Simplified state transition logic: Manual cycle through states on click
-    const handleCoreClick = () => {
-        console.log('handleCoreClick called, current coreState:', coreState);
-        const states = ['idle', 'listening', 'thinking', 'speaking'];
-        const currentIndex = states.indexOf(coreState);
-        const nextIndex = (currentIndex + 1) % states.length;
-        const nextState = states[nextIndex];
-
-        console.log(`Transitioning from ${coreState} to ${nextState}`);
-        setCoreState(nextState);
-    }
+    // Keyboard Shortcuts Actions
+    useKeyboardShortcuts({
+        onVoiceTrigger: () => voiceStatus === 'listening' ? stopListening() : startListening(),
+        onCancel: () => stopListening(),
+        onSettingsTrigger: () => setCurrentView('settings'),
+        onSearchTrigger: () => setCurrentView('search'),
+        onContextSwitch: (context) => setCurrentView(context),
+        onHelpTrigger: () => setIsHelpOpen(true),
+        onClearChat: () => {
+            // Chat cleaning logic is now in ChatContext, we'll link it later in components
+        }
+    });
 
     return (
         <MainLayout
-            isListening={coreState === 'listening'}
-            activeWidget={activeWidget}
-            onWidgetChange={setActiveWidget}
+            isListening={voiceStatus === 'listening'}
+            activeWidget={currentView}
+            onWidgetChange={setCurrentView}
         >
             {/* Decorative Background Elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -56,33 +67,30 @@ function App() {
                 />
             </div>
 
-            {/* AI Core Component */}
+            {/* AI Core & Visualization Area */}
             <div className="flex flex-col items-center gap-12 z-10">
                 <AICore
-                    state={coreState}
-                    onClick={handleCoreClick}
-                    size={300}
+                    state={voiceStatus}
+                    onClick={() => voiceStatus === 'listening' ? stopListening() : startListening()}
                 />
 
                 <VoiceWaveform
-                    state={coreState}
-                    size={{ width: 400, height: 80 }}
+                    state={voiceStatus}
                 />
             </div>
 
-            {/* Control Buttons */}
+            {/* Manual Control Overlays (Optional duplicate of BottomBar for desktop focus) */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
-                className="flex gap-4 z-10"
+                className="hidden lg:flex gap-4 z-10 mb-8"
             >
                 <motion.button
                     onClick={() => setIsMuted(!isMuted)}
                     className="glass rounded-softer p-4 transition-smooth hover:shadow-purple-glow"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    aria-label={isMuted ? "Unmute" : "Mute"}
                 >
                     {isMuted ? (
                         <VolumeX className="w-6 h-6 text-text-muted" />
@@ -92,15 +100,27 @@ function App() {
                 </motion.button>
 
                 <motion.button
+                    onClick={() => setCurrentView('settings')}
                     className="glass rounded-softer p-4 transition-smooth hover:shadow-purple-glow"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    aria-label="Settings"
                 >
-                    <Settings className="w-6 h-6 text-primary" />
+                    <SettingsIcon className="w-6 h-6 text-primary" />
                 </motion.button>
             </motion.div>
+
+            {/* Global Modals */}
+            <LanguageModal />
+            <ShortcutHelp isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
         </MainLayout>
+    )
+}
+
+function App() {
+    return (
+        <AppProviders>
+            <AppContent />
+        </AppProviders>
     )
 }
 
