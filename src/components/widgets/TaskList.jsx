@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Check, Trash2, Calendar, Target } from 'lucide-react';
+import { staggerItem, buttonHover, buttonTap, cardHover } from '../../styles/animations';
 
 const TaskItem = ({ task, onToggle, onDelete }) => (
     <motion.div
         layout
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 20 }}
-        whileHover={{ x: 5 }}
+        variants={staggerItem('right')}
+        whileHover={{ x: 5, backgroundColor: 'rgba(255,255,255,0.05)' }}
         className={`flex items-center gap-4 glass-strong p-4 rounded-2xl border border-white/5 group transition-all ${task.completed ? 'opacity-50' : ''
             }`}
     >
         <button
             onClick={() => onToggle(task.id)}
+            aria-label={`Mark task "${task.text}" as ${task.completed ? 'incomplete' : 'complete'}`}
             className={`w-6 h-6 rounded-lg flex items-center justify-center border-2 transition-all ${task.completed
-                    ? 'bg-success border-success text-white'
-                    : 'border-primary/30 hover:border-primary'
+                ? 'bg-success border-success text-white'
+                : 'border-primary/30 hover:border-primary'
                 }`}
         >
             {task.completed && <Check size={14} strokeWidth={4} />}
@@ -43,6 +43,7 @@ const TaskItem = ({ task, onToggle, onDelete }) => (
 
         <button
             onClick={() => onDelete(task.id)}
+            aria-label={`Delete task "${task.text}"`}
             className="opacity-0 group-hover:opacity-100 p-2 hover:bg-error/20 rounded-xl transition-all"
         >
             <Trash2 size={16} className="text-text-muted hover:text-error" />
@@ -74,7 +75,10 @@ const TaskList = () => {
     });
 
     return (
-        <div className="w-[500px] h-[550px] glass-strong rounded-[32px] p-8 border border-white/10 shadow-purple-glow-sm flex flex-col">
+        <motion.div
+            whileHover={cardHover}
+            className="w-[500px] h-[550px] glass-strong rounded-[32px] p-8 border border-white/10 shadow-purple-glow-sm flex flex-col"
+        >
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary/10 rounded-xl text-primary">
@@ -83,8 +87,9 @@ const TaskList = () => {
                     <h2 className="text-2xl font-bold text-text-primary tracking-tight">Active Tasks</h2>
                 </div>
                 <motion.button
-                    whileHover={{ scale: 1.1, rotate: 90 }}
-                    whileTap={{ scale: 0.9 }}
+                    whileHover={{ ...buttonHover, rotate: 90 }}
+                    whileTap={buttonTap}
+                    aria-label="Add new task"
                     className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-purple-glow"
                 >
                     <Plus size={20} />
@@ -97,8 +102,8 @@ const TaskList = () => {
                         key={f}
                         onClick={() => setFilter(f)}
                         className={`px-4 py-1.5 rounded-full text-[11px] font-bold transition-all ${filter === f
-                                ? 'bg-primary/20 text-primary border border-primary/30'
-                                : 'glass-strong text-text-muted hover:text-text-primary'
+                            ? 'bg-primary/20 text-primary border border-primary/30'
+                            : 'glass-strong text-text-muted hover:text-text-primary'
                             }`}
                     >
                         {f}
@@ -128,7 +133,7 @@ const TaskList = () => {
                     )}
                 </AnimatePresence>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

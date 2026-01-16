@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronDown, Check, Search } from 'lucide-react';
+import { staggerContainer, staggerItem, buttonHover, buttonTap, springTransition, toggleVariants } from '../../styles/animations';
 
 export const ToggleSwitch = ({ isOn, onToggle, label }) => (
     <div className="flex items-center justify-between w-full py-2">
         {label && <span className="text-sm font-medium text-text-primary">{label}</span>}
         <button
             onClick={() => onToggle(!isOn)}
+            aria-label={label ? `${label} toggle` : 'Toggle setting'}
+            aria-pressed={isOn}
             className={`relative w-12 h-6 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 ${isOn ? 'bg-gradient-to-r from-primary to-secondary shadow-glow' : 'bg-white/10'
                 }`}
         >
             <motion.div
-                animate={{ x: isOn ? 26 : 2 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                variants={toggleVariants}
+                animate={isOn ? 'on' : 'off'}
                 className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm"
             />
         </button>
@@ -66,9 +69,10 @@ export const Dropdown = ({ label, options, selected, onSelect, showPreview = fal
                     <>
                         <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
                         <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
+                            variants={staggerContainer}
+                            initial="hidden"
+                            animate="show"
+                            exit="hidden"
                             className="absolute top-full left-0 right-0 mt-2 glass-strong rounded-softest overflow-hidden z-50 border border-primary/20 backdrop-blur-xl"
                         >
                             <div className="p-2 border-b border-primary/10 flex items-center gap-2">
@@ -84,8 +88,9 @@ export const Dropdown = ({ label, options, selected, onSelect, showPreview = fal
                             </div>
                             <div className="max-h-48 overflow-y-auto no-scrollbar">
                                 {filteredOptions.map((opt) => (
-                                    <button
+                                    <motion.button
                                         key={opt}
+                                        variants={staggerItem('down')}
                                         onClick={() => {
                                             onSelect(opt);
                                             setIsOpen(false);
@@ -107,7 +112,7 @@ export const Dropdown = ({ label, options, selected, onSelect, showPreview = fal
                                             )}
                                             {opt === selected && <Check className="w-4 h-4 text-primary" />}
                                         </div>
-                                    </button>
+                                    </motion.button>
                                 ))}
                             </div>
                         </motion.div>
@@ -167,8 +172,8 @@ export const ActionButton = ({ onClick, children, variant = 'primary', className
 
     return (
         <motion.button
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={buttonHover}
+            whileTap={buttonTap}
             onClick={onClick}
             className={`px-6 py-2.5 rounded-softer text-sm font-medium transition-all duration-300 ${variants[variant]} ${className}`}
         >

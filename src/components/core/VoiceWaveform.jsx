@@ -1,5 +1,9 @@
 import { useRef, useEffect, useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+
+// Helper for smooth transitions
+const lerp = (start, end, amt) => (1 - amt) * start + amt * end
+
 import { useUI } from '../../contexts/UIContext'
 
 /**
@@ -112,16 +116,25 @@ const VoiceWaveform = ({ state = 'idle', size: providedSize }) => {
     }, [])
 
     // Rendering loop
+
     useEffect(() => {
         const canvas = canvasRef.current
         if (!canvas) return
 
         const ctx = canvas.getContext('2d')
         let offset = 0
+        let currentLerpConfig = { ...currentConfig }
 
         const draw = () => {
             const { width, height } = canvas
             ctx.clearRect(0, 0, width, height)
+
+            // Smoothly transition config values
+            Object.keys(currentConfig).forEach(key => {
+                if (typeof currentConfig[key] === 'number') {
+                    currentLerpConfig[key] = lerp(currentLerpConfig[key] || 0, currentConfig[key], 0.1)
+                }
+            })
 
             let audioData = []
             if (state === 'listening' && analyserRef.current && dataArrayRef.current) {
@@ -130,15 +143,15 @@ const VoiceWaveform = ({ state = 'idle', size: providedSize }) => {
             }
 
             // Draw multiple overlapping waves
-            for (let i = 0; i < currentConfig.waves; i++) {
-                drawWave(ctx, i, offset, audioData)
+            for (let i = 0; i < currentLerpConfig.waves; i++) {
+                drawWave(ctx, i, offset, audioData, currentLerpConfig)
             }
 
-            offset += currentConfig.speed
+            offset += currentLerpConfig.speed
             animationFrameRef.current = requestAnimationFrame(draw)
         }
 
-        const drawWave = (ctx, index, offset, audioData) => {
+        const drawWave = (ctx, index, offset, audioData, config) => {
             const { width, height } = canvas
             const midY = height / 2
 
@@ -152,10 +165,10 @@ const VoiceWaveform = ({ state = 'idle', size: providedSize }) => {
                 const xPos = x * step
 
                 // Base sine wave movement
-                let waveY = Math.sin(x * currentConfig.frequency + offset + index)
+                let waveY = Math.sin(x * config.frequency + offset + index)
 
                 // State-specific modifiers
-                let amplitude = currentConfig.amplitude * (height / 3)
+                let amplitude = config.amplitude * (height / 3)
 
                 if (state === 'listening' && audioData.length > 0) {
                     // Map frequency data to wave sections

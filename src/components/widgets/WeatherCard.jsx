@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Cloud, Droplets, Wind, Sun, CloudRain, Thermometer } from 'lucide-react';
+import { cardHover, staggerContainer, staggerItem } from '../../styles/animations';
 
 const ForecastItem = ({ day, icon: Icon, high, low }) => (
     <motion.div
-        whileHover={{ y: -5, scale: 1.05 }}
+        variants={staggerItem('up')}
+        whileHover={cardHover}
         className="flex flex-col items-center gap-2 glass-strong p-3 min-w-[90px] rounded-2xl border border-white/5"
     >
         <span className="text-[11px] font-bold text-text-muted uppercase tracking-wider">{day}</span>
@@ -40,6 +42,7 @@ const WeatherCard = () => {
 
     return (
         <motion.div
+            whileHover={cardHover}
             className="w-[500px] h-[320px] glass-strong rounded-[32px] p-8 border border-white/10 shadow-purple-glow-sm relative overflow-hidden"
         >
             <div className="grid grid-cols-2 h-full">
@@ -92,13 +95,18 @@ const WeatherCard = () => {
                     </div>
 
                     <div className="w-full mt-6">
-                        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                        <motion.div
+                            variants={staggerContainer}
+                            initial="hidden"
+                            animate="show"
+                            className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide"
+                        >
                             <ForecastItem day="Mon" icon={Sun} high={28} low={20} />
                             <ForecastItem day="Tue" icon={Cloud} high={26} low={18} />
                             <ForecastItem day="Wed" icon={CloudRain} high={22} low={17} />
                             <ForecastItem day="Thu" icon={Sun} high={25} low={19} />
                             <ForecastItem day="Fri" icon={Cloud} high={24} low={18} />
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
             </div>

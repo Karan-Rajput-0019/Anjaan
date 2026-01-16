@@ -3,6 +3,7 @@ import { Mic, Brain, Volume2 } from 'lucide-react'
 import ParticleSystem from './ParticleSystem'
 import RippleEffect from './RippleEffect'
 import { useUI } from '../../contexts/UIContext'
+import { aiPulse, smoothTransition, springTransition } from '../../styles/animations'
 
 const AICore = ({
     state = 'idle', // 'idle' | 'listening' | 'thinking' | 'speaking'
@@ -70,7 +71,6 @@ const AICore = ({
                 className="relative cursor-pointer select-none"
                 style={{ width: size, height: size }}
                 onClick={() => {
-                    console.log('AICore clicked, current state:', state);
                     if (onClick) {
                         onClick();
                     }
@@ -116,6 +116,7 @@ const AICore = ({
                     }}
                 />
 
+
                 {/* Ripple Effects for LISTENING and SPEAKING */}
                 <AnimatePresence>
                     {(state === 'listening' || state === 'speaking') && (
@@ -144,19 +145,15 @@ const AICore = ({
 
                 {/* Main Core Circle */}
                 <motion.div
+                    layout
                     className="absolute inset-8 rounded-full shadow-2xl"
                     style={{
                         background: config.gradient,
                         boxShadow: `0 0 60px ${config.glowColor}, inset 0 0 40px rgba(255, 255, 255, 0.1)`,
                     }}
-                    animate={{
-                        scale: state === 'speaking' ? [1, 1.12, 1] : config.pulseScale,
-                    }}
-                    transition={{
-                        duration: config.pulseDuration,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                    }}
+                    variants={aiPulse}
+                    animate={state === 'listening' ? 'listening' : state === 'idle' ? 'idle' : ''}
+                    transition={smoothTransition}
                 >
                     {/* Inner Rotating Ring (Clockwise for THINKING) */}
                     {state === 'thinking' && (

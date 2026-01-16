@@ -8,6 +8,7 @@ import FileBrowser from './FileBrowser';
 import SettingsPanel from './SettingsPanel';
 
 import { WidgetSkeleton } from '../core/Skeletons'
+import { staggerContainer, staggerItem } from '../../styles/animations'
 
 const ContentManager = ({ activeContext }) => {
     const [isLoading, setIsLoading] = useState(false)
@@ -46,13 +47,15 @@ const ContentManager = ({ activeContext }) => {
             <AnimatePresence mode="wait">
                 <motion.div
                     key={activeContext}
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: -20 }}
-                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    variants={staggerContainer}
+                    initial="hidden"
+                    animate="show"
+                    exit="hidden"
                     className="w-full h-full flex justify-center items-center"
                 >
-                    {getWidget()}
+                    <motion.div variants={staggerItem('up')} className="w-full h-full flex justify-center items-center">
+                        {getWidget()}
+                    </motion.div>
                 </motion.div>
             </AnimatePresence>
         </div>

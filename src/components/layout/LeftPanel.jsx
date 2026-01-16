@@ -14,17 +14,16 @@ import {
 } from 'lucide-react'
 import { useUI } from '../../contexts/UIContext'
 import { useAnjaan } from '../../contexts/AnjaanContext'
+import { staggerContainer, staggerItem, buttonHover, buttonTap } from '../../styles/animations'
 
 const QuickAccessButton = ({ item, isActive, onClick, delay, isCollapsed }) => {
     const Icon = item.icon
 
     return (
         <motion.button
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay, duration: 0.3 }}
-            whileHover={{ x: isCollapsed ? 0 : 4, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            variants={staggerItem('right')}
+            whileHover={buttonHover}
+            whileTap={buttonTap}
             onClick={onClick}
             className={`
                 relative w-full h-[52px] ${isCollapsed ? 'justify-center px-0' : 'px-4'} flex items-center gap-4 rounded-[16px] transition-all duration-300
@@ -107,10 +106,19 @@ const LeftPanel = () => {
     ]
 
     return (
-        <div className={`flex flex-col gap-2 h-full ${isCollapsed ? 'items-center' : ''}`}>
+        <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate="show"
+            className={`flex flex-col gap-2 h-full ${isCollapsed ? 'items-center' : ''}`}
+        >
             <div role="menu" className="flex flex-col w-full h-full overflow-y-auto no-scrollbar pb-10">
                 {categories.map((cat, idx) => (
-                    <div key={cat.id} className="flex flex-col mb-4">
+                    <motion.div
+                        key={cat.id}
+                        variants={staggerContainer}
+                        className="flex flex-col mb-4"
+                    >
                         {!isCollapsed && (
                             <motion.span
                                 initial={{ opacity: 0 }}
@@ -132,7 +140,7 @@ const LeftPanel = () => {
                                 />
                             ))}
                         </div>
-                    </div>
+                    </motion.div>
                 ))}
             </div>
 
@@ -150,7 +158,7 @@ const LeftPanel = () => {
                     </div>
                 </motion.div>
             )}
-        </div>
+        </motion.div>
     )
 }
 

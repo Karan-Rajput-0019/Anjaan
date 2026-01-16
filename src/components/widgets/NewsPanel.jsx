@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, Clock, TrendingUp } from 'lucide-react';
+import { cardHover, staggerContainer, staggerItem } from '../../styles/animations';
 
-const NewsCard = ({ article, index }) => (
+const NewsCard = ({ article }) => (
     <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.1 }}
-        whileHover={{ scale: 1.02, y: -4 }}
-        className="flex gap-4 glass-strong p-4 rounded-2xl border border-white/5 cursor-pointer hover:shadow-purple-glow-sm transition-all"
+        variants={staggerItem('up')}
+        whileHover={cardHover}
+        role="article"
+        aria-label={`Read full article: ${article.title}`}
+        className="flex gap-4 glass-strong p-4 rounded-2xl border border-white/5 cursor-pointer transition-all"
     >
         <div className="w-32 h-24 rounded-xl overflow-hidden shrink-0 bg-white/5">
             <img src={article.image} alt="" className="w-full h-full object-cover opacity-80" />
@@ -76,8 +77,8 @@ const NewsPanel = () => {
                             key={cat}
                             onClick={() => setActiveTab(cat)}
                             className={`px-4 py-1.5 rounded-full text-[11px] font-bold transition-all ${activeTab === cat
-                                    ? 'bg-gradient-to-br from-primary to-secondary text-white shadow-purple-glow-sm'
-                                    : 'glass-strong text-text-muted hover:text-text-primary'
+                                ? 'bg-gradient-to-br from-primary to-secondary text-white shadow-purple-glow-sm'
+                                : 'glass-strong text-text-muted hover:text-text-primary'
                                 }`}
                         >
                             {cat}
@@ -87,11 +88,16 @@ const NewsPanel = () => {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-4 custom-scrollbar">
-                {news.map((article, i) => (
-                    <NewsCard key={article.id} article={article} index={i} />
+            <motion.div
+                variants={staggerContainer}
+                initial="hidden"
+                animate="show"
+                className="flex-1 overflow-y-auto px-6 pb-6 space-y-4 custom-scrollbar"
+            >
+                {news.map((article) => (
+                    <NewsCard key={article.id} article={article} />
                 ))}
-            </div>
+            </motion.div>
         </div>
     );
 };

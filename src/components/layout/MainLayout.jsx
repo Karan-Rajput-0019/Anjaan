@@ -9,6 +9,7 @@ import ContentManager from '../widgets/ContentManager'
 import { useUI } from '../../contexts/UIContext'
 import { useAnjaan } from '../../contexts/AnjaanContext'
 import useGestures from '../../hooks/useGestures'
+import { pageVariants } from '../../styles/animations'
 
 const MainLayout = ({ children, isListening = false }) => {
     const { currentView, setCurrentView } = useAnjaan();
@@ -41,8 +42,9 @@ const MainLayout = ({ children, isListening = false }) => {
         () => isSmall && setIsLeftDrawerOpen(true),  // Swipe Right -> Open Menu
         () => {
             if (isSmall) {
-                console.log('Pull to refresh triggered');
-                // Could trigger a visual feedback or actual refresh logic
+                if (isSmall) {
+                    // Could trigger a visual feedback or actual refresh logic
+                }
             }
         }
     );
@@ -94,10 +96,19 @@ const MainLayout = ({ children, isListening = false }) => {
 
                 {/* Center Area */}
                 <CenterArea className="flex-1 min-w-0">
-                    <div className="flex flex-col items-center gap-8 sm:gap-12 w-full max-w-4xl mx-auto">
-                        {children}
-                        <ContentManager activeContext={currentView} />
-                    </div>
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={currentView}
+                            variants={pageVariants}
+                            initial="initial"
+                            animate="animate"
+                            exit="exit"
+                            className="flex flex-col items-center gap-8 sm:gap-12 w-full max-w-4xl mx-auto"
+                        >
+                            {children}
+                            <ContentManager activeContext={currentView} />
+                        </motion.div>
+                    </AnimatePresence>
                 </CenterArea>
 
                 {/* Right Panel / Drawer */}

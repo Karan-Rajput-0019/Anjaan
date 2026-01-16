@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { shimmerVariants } from '../../styles/animations'
 
 export const Skeleton = ({ className, variant = 'rect' }) => {
     const variants = {
@@ -9,12 +10,15 @@ export const Skeleton = ({ className, variant = 'rect' }) => {
     }
 
     return (
-        <motion.div
-            initial={{ opacity: 0.5 }}
-            animate={{ opacity: [0.5, 0.8, 0.5] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-            className={`bg-white/5 border border-white/10 ${variants[variant]} ${className}`}
-        />
+        <div className={`relative overflow-hidden bg-white/5 border border-white/10 ${variants[variant]} ${className}`}>
+            <motion.div
+                variants={shimmerVariants}
+                initial="initial"
+                animate="animate"
+                className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                style={{ backgroundSize: '200% 100%' }}
+            />
+        </div>
     )
 }
 
